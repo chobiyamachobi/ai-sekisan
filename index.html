@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eaf6ff">
+<title>AI住宅積算ツール｜本番Web版 v5.4</title>
+<style>
+:root{--bg:#f5f9fc;--card:#fff;--ink:#18364d;--muted:#6b8192;--line:#d9e7f0;--blue:#2688d7;--green:#2f9e68;--amber:#c98b17;--red:#d14d4d;--safe:env(safe-area-inset-bottom)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;background:linear-gradient(#edf8ff,#fff 430px);color:var(--ink);padding-bottom:calc(16px + var(--safe))}
+button,input,select,textarea{font:inherit}
+main{max-width:1180px;margin:auto;padding:18px}
+.head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px}
+h1{margin:0;font-size:24px;line-height:1.25}.sub{font-size:12px;color:var(--muted)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{background:#e9f8ef;color:#24764b;border:1px solid #bfe3ce;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800}
+.badge2{background:#eef5ff;color:#315b8e;border-color:#c8dcf2}
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:14px}
+.step{padding:9px;border:1px solid var(--line);background:#fff;border-radius:10px;text-align:center;font-size:12px;color:var(--muted)}
+.step.on{background:#eaf6ff;border-color:#9acdf1;color:#1268aa;font-weight:800}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:18px;margin-bottom:14px;box-shadow:0 8px 28px rgba(43,89,121,.07)}
+h2{font-size:18px;margin:0 0 6px}.lead{color:var(--muted);font-size:13px;margin:0 0 14px}
+label{font-size:12px;color:#567085;font-weight:800}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cddfeb;border-radius:10px;margin-top:5px;color:var(--ink);background:#fff}
+textarea{min-height:190px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.uploadbox{border:2px dashed #9bcceb;background:#f2faff;border-radius:14px;padding:18px}
+.upload-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.filebtn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;border-radius:11px;font-weight:800;cursor:pointer;padding:10px;border:1px solid #bad9ed;background:#fff;color:#275f83}
+.filebtn.primary{background:#eaf6ff;border-color:#8bc5eb;color:#1268aa}
+.filebtn input{display:none}
+.filemeta{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.6}
+.preview{height:360px;background:#f6f8fa;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;overflow:hidden;position:relative}
+.preview img{max-width:100%;max-height:100%;object-fit:contain}
+.preview .placeholder{color:var(--muted);font-size:12px}
+.thumbbar{display:flex;gap:8px;overflow:auto;margin-top:10px;padding-bottom:2px}
+.thumb{width:74px;height:74px;border:1px solid var(--line);border-radius:9px;background:#fff;object-fit:cover;flex:0 0 auto}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer;min-height:44px}
+.p{background:var(--blue);color:#fff}.s{background:#edf3f7;color:#315a77}.g{background:#ebf8f0;color:#26774e}.r{background:#ffeded;color:#a63c3c}
+.info,.warn,.ok{padding:11px 13px;border-radius:10px;font-size:13px;margin:11px 0;line-height:1.65}.info{background:#eaf6ff;border:1px solid #bee0f6}.warn{background:#fff7df;border:1px solid #efd37d}.ok{background:#eaf8ef;border:1px solid #bfe3ce}
+.hidden{display:none!important}
+.scroll{overflow:auto;border:1px solid var(--line);border-radius:11px;max-height:520px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1280px}
+th,td{border-bottom:1px solid #e8eff4;padding:7px;text-align:left;vertical-align:middle}
+th{background:#f4f9fc;position:sticky;top:0;z-index:1}
+td input,td select{margin:0;padding:7px}
+.tag{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:800}.A{background:#e9f8ef;color:#24764b}.B{background:#fff4d7;color:#88620e}.C{background:#ffeded;color:#a63c3c}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:13px}.kpi{padding:13px;border:1px solid var(--line);border-radius:12px}.kpi small{color:var(--muted)}.kpi b{display:block;font-size:21px;margin-top:3px}
+details{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fff}summary{cursor:pointer;font-weight:800}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#f6f8fa;border:1px solid var(--line);padding:10px;border-radius:9px;white-space:pre-wrap}
+.sticky-actions{position:sticky;bottom:calc(8px + var(--safe));z-index:3;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:13px;padding:8px;box-shadow:0 8px 24px rgba(31,72,102,.13)}
+@media(max-width:820px){
+ main{padding:12px}.head{align-items:flex-start;flex-direction:column}.grid2,.kpis{grid-template-columns:1fr}.steps{grid-template-columns:repeat(3,1fr)}
+ .card{padding:14px;border-radius:14px}.preview{height:300px}.upload-actions{grid-template-columns:1fr}
+ h1{font-size:21px}.btns button{flex:1 1 100%}
+}
+@media(max-width:480px){
+ .steps{grid-template-columns:repeat(2,1fr)}.step{font-size:11px;padding:8px 5px}.preview{height:250px}
+ .thumb{width:62px;height:62px}.badge{font-size:11px}
+}
+
+.status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#2f9e68;margin-right:6px}
+.native-file{margin-top:7px}
+.price-master{margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfdff}
+.price-master-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;align-items:start}
+.price-master .mini{font-size:12px;color:var(--muted);line-height:1.6}
+.price-master table{min-width:860px}
+.price-master .status{font-size:12px;margin-top:8px}
+@media(max-width:820px){.price-master-grid{grid-template-columns:1fr}}
+
+/* 操作マニュアル専用スタイル */
+.manual-body{max-height:75vh;overflow:auto;line-height:1.85;font-size:14px;padding:12px 3px}
+.manual-body h1{font-size:23px;margin:16px 0}.manual-body h2{font-size:19px;margin:22px 0 10px}.manual-body h3{font-size:16px;margin:16px 0 8px}
+.manual-body p{margin:10px 0}.manual-body table{min-width:0;width:100%;font-size:13px}.manual-body td,.manual-body th{overflow-wrap:anywhere}
+.manual-body pre{overflow:auto;background:#f2f6f9;padding:12px;border-radius:9px;white-space:pre;font-size:12px}
+.manual-body blockquote{border-left:4px solid #9bcceb;margin:12px 0;padding:6px 14px;background:#f5faff}
+.manual-body li{margin:4px 0}.manual-body hr{border:0;border-top:1px solid #d9e7f0;margin:20px 0}
+</style>
+</head>
+<body><main>
+<div class="head">
+  <div>
+    <h1>🏠 AI住宅積算ツール <span style="font-size:13px">本番Web版 v5.4</span></h1>
+    <div class="sub">GitHub Pages向け本番版／PC・iPhone対応／API不要</div>
+  </div>
+  <div class="badges">
+    <div class="badge">API料金 ¥0</div>
+    <div class="badge badge2">GitHub Pages 本番対応</div>
+  </div>
+</div>
+
+<div id="systemStatus" class="ok" style="margin-top:0">
+  <b>⏳ システム確認中...</b>
+  <span id="systemStatusText">JavaScriptの動作を確認しています。</span>
+</div>
+
+<div class="card" style="margin-bottom:14px"><a href="#operationManual" style="font-weight:800;color:#1268aa;text-decoration:none">📖 操作マニュアル・トラブル対処法を見る（初めての方はこちら）</a></div>
+<div class="steps">
+  <div class="step on">1. 図面</div><div class="step">2. プロンプト</div><div class="step">3. ChatGPT</div>
+  <div class="step">4. JSON</div><div class="step">5. 積算</div><div class="step">6. 出力</div>
+</div>
+
+<section class="card" id="p1">
+  <h2>STEP 1｜図面を選択</h2>
+  <p class="lead">GitHub PagesのHTTPS URLから開く前提の本番版です。PC・iPhoneの両方で利用できます。</p>
+  <div class="grid2">
+    <div>
+      <label>案件名<input id="project" placeholder="例：○○様邸 新築工事"></label>
+      <div style="height:10px"></div>
+      <div class="uploadbox">
+        <b>図面を追加</b>
+        <div class="upload-actions">
+          <div>
+            <label>🖼 写真・画像を選ぶ
+              <input id="imagePicker" type="file" accept="image/*,.heic,.heif,.png,.jpg,.jpeg,.webp" multiple>
+            </label>
+          </div>
+          <div>
+            <label>📁 ファイルから選ぶ
+              <input id="filePicker" type="file" accept="image/*,application/pdf,.pdf,.heic,.heif,.png,.jpg,.jpeg,.webp" multiple>
+            </label>
+          </div>
+        </div>
+        <div class="filemeta" id="filemeta"><b>0枚選択</b><br>まだ図面は選択されていません。</div>
+        <div class="thumbbar" id="thumbbar"></div>
+      </div>
+      <div class="info"><b>ポイント：</b><b>重要：この画面で選んだ図面はChatGPTへ自動送信されません。</b> STEP 3で必ず同じPDF・画像をChatGPTにも添付してください。添付しないと図面から数量を読み取れません。<br><b>iPhoneでHEIC画像の場合：</b>「選択済み」と表示されてもプレビューだけ出ないことがありますが、プロンプト生成には進めます。</div>
+      <div class="sticky-actions"><button class="p" id="generatePromptBtn" type="button" style="width:100%">ChatGPT用プロンプトを作る</button><div id="generateStatus" class="smallnote" style="margin-top:7px;text-align:center"></div></div>
+    </div>
+    <div class="preview" id="preview"><span class="placeholder">選択した図面をここに表示</span></div>
+  </div>
+</section>
+
+<section class="card hidden" id="p2">
+  <h2>STEP 2｜ChatGPT解析用プロンプト</h2>
+  <p class="lead">案件名と選択した図面数を自動反映します。生成ボタンを押すと、この画面へ切り替わります。</p>
+  <label>ChatGPTに貼る文章<textarea id="prompt"></textarea></label>
+  <div class="btns">
+    <button class="p" onclick="copyPrompt()">📋 プロンプトをコピー</button>
+    <button class="s" onclick="show(1)">戻る</button>
+    <button class="g" onclick="show(3)">ChatGPTへ移動した</button>
+  </div>
+  <div id="copymsg" class="ok hidden">コピーしました。ChatGPTで図面を添付し、この文章を貼り付けてください。</div>
+</section>
+
+<section class="card hidden" id="p3">
+  <h2>STEP 3｜ChatGPTで解析</h2>
+  <div class="info"><b>操作は4つだけ：</b><br>① ChatGPTを開く → ② <b>この画面で選んだ図面と同じファイルをChatGPTに添付</b> → ③ プロンプトを貼る → ④ 返ってきたJSONをコピー</div>
+  <div class="warn"><b>必須確認：</b>ChatGPTの入力欄に図面ファイルが添付された状態で送信してください。ファイル名だけ・プロンプトだけでは図面を解析できません。JSONのitemsが空の場合は解析結果として使用できません。</div><div class="warn">無料ChatGPTでは、ファイル解析や利用回数に上限がかかる場合があります。</div>
+  <div class="btns"><button class="p" onclick="show(4)">JSONをコピーした</button><button class="s" onclick="show(2)">戻る</button></div>
+</section>
+
+<section class="card hidden" id="p4">
+  <h2>STEP 4｜JSONを貼り付け</h2>
+  <p class="lead">ChatGPTの回答全文をそのまま貼ってOKです。```json 付きでも自動で取り除きます。</p>
+  <label>ChatGPT回答<textarea id="jsonbox" placeholder='{"document_summary": {...}, "items":[...]}'></textarea></label>
+  <div class="btns">
+    <button class="p" onclick="importJSON()">JSONを読み込んで表にする</button>
+    <button class="s" onclick="fillSample()">サンプルJSON</button>
+    <button class="s" onclick="show(3)">戻る</button>
+  </div>
+  <div id="jsonmsg" class="warn hidden"></div>
+</section>
+
+<section class="card hidden" id="p5">
+  <h2>STEP 5｜読み取り結果を確認・修正</h2>
+  <div id="docSummary" class="info"></div><div id="quantityStatus" class="info hidden"></div>
+  <div class="scroll"><table>
+    <thead><tr><th>階</th><th>工種</th><th>部屋</th><th>項目</th><th>仕様・寸法</th><th>数量</th><th>単位</th><th>算出根拠</th><th>参照図面</th><th>信頼度</th><th>要確認</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table></div>
+  <div class="btns"><button class="g" onclick="addRow()">＋ 手入力行を追加</button><button class="s" onclick="show(4)">JSONへ戻る</button><button class="p" onclick="toEstimate()">この内容で積算へ</button></div>
+</section>
+
+<section class="card hidden" id="p6">
+  <h2>STEP 6｜料金表を読み込んで積算</h2>
+  <div class="warn">材料単価・施工単価・ロス率は先方の実データを使用してください。料金表はこの端末・ブラウザ内に保存され、次回から自動適用されます。</div>
+  <div class="price-master">
+    <div class="price-master-grid"><div><b>💴 料金マスター</b><div class="mini">Excel / CSVを一度読み込むと保存されます。対応列の例：項目、仕様・寸法、単位、ロス率、材料単価、施工単価。項目名は必須です。</div>
+      <div class="btns"><label class="filebtn primary" style="display:inline-flex;width:auto">📄 Excel / CSVを読み込む<input id="priceFile" type="file" accept=".xlsx,.xls,.csv,.tsv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onchange="importPriceFile(this.files&&this.files[0])"></label><button class="s" type="button" onclick="addPriceMasterRow()">＋ 料金行を追加</button><button class="g" type="button" onclick="savePriceMasterFromTable()">料金表を保存</button><button class="s" type="button" onclick="exportPriceMasterCsv()">料金表CSV出力</button><button class="r" type="button" onclick="clearPriceMaster()">料金表を削除</button></div><div id="priceStatus" class="status"></div></div>
+      <div class="info" style="margin:0"><b>自動照合ルール</b><br>① 項目名を一致<br>② 仕様・寸法がある場合は一致を優先<br>③ 単位がある場合は一致を優先<br>一致しない行は単価0のまま残し、手入力できます。</div></div>
+    <div class="scroll" style="max-height:300px;margin-top:12px"><table><thead><tr><th>項目</th><th>仕様・寸法</th><th>単位</th><th>ロス率%</th><th>材料単価</th><th>施工単価</th><th>削除</th></tr></thead><tbody id="priceMasterBody"></tbody></table></div>
+  </div>
+  <div class="btns" style="margin-bottom:10px"><button class="g" type="button" onclick="applyPriceMasterToEstimate()">料金マスターを再適用</button><button class="s" type="button" onclick="saveCurrentEstimateToMaster()">現在の単価を料金表に保存</button></div>
+  <div class="scroll"><table><thead><tr><th>項目</th><th>数量</th><th>単位</th><th>ロス率%</th><th>発注数量</th><th>材料単価</th><th>施工単価</th><th>材料費</th><th>施工費</th><th>合計</th><th>信頼度</th><th>単価元</th></tr></thead><tbody id="estbody"></tbody></table></div>
+  <div class="kpis"><div class="kpi"><small>材料費</small><b id="mat">¥0</b></div><div class="kpi"><small>施工費</small><b id="lab">¥0</b></div><div class="kpi"><small>概算原価</small><b id="total">¥0</b></div><div class="kpi"><small>要確認</small><b id="checks">0</b></div></div>
+  <div class="btns"><button class="s" onclick="show(5)">戻る</button><button class="p" onclick="show(7)">出力へ</button></div>
+</section>
+
+<section class="card hidden" id="p7">
+  <h2>STEP 7｜出力</h2>
+  <p class="lead">Excel（.xlsx）とCSVをブラウザだけで生成します。iPhoneでは共有シートから「ファイルに保存」を選べます。</p>
+  <div class="btns"><button class="p" onclick="exportXlsx()">📥 Excel .xlsx</button><button class="s" onclick="exportCsv()">📥 CSV</button><button class="s" onclick="show(6)">戻る</button></div>
+  <div id="exportStatus" class="info hidden"></div>
+  <div class="info"><b>iPhone：</b>共有画面が表示されたら「ファイルに保存」を選んでください。Excelアプリがなくても保存できます。</div>
+  <div class="warn"><b>正式見積・契約・発注前には必ず元図面と照合してください。</b></div>
+</section>
+
+<details class="card">
+  <summary>GitHub Pages公開について</summary>
+  <div class="mono">GitHub Pagesなどへ index.html を置く
+↓
+https://xxxxx.github.io/xxxx/
+↓
+PC / iPhoneのChrome・Safariで同じURLを開く
+↓
+ZIP展開不要
+↓
+画像選択 → プロンプト作成 → ChatGPT → JSON貼付 → 積算</div>
+</details>
+<details class="card" id="operationManual"><summary>📖 AI住宅積算ツール 操作マニュアル｜操作手順・トラブル対応ガイド</summary><div class="manual-body"><h1>AI住宅積算ツール 操作マニュアル</h1>
+<p><strong>初めてご利用いただく方向け｜操作手順・トラブル対応ガイド</strong></p>
+<hr />
+<h2>1. はじめに</h2>
+<p>本ツールは、住宅図面をChatGPTで解析し、図面から読み取れる数量を整理したうえで、自社の料金表を使用して概算積算を行うための補助ツールです。</p>
+<p>図面から読み取った情報をJSON形式で取り込み、数量や単価を確認・修正しながら積算結果を作成できます。</p>
+<h3>本ツールでできること</h3>
+<ul>
+<li>住宅図面（画像・PDF）の選択</li>
+<li>ChatGPTで図面を解析するための指示文の自動生成</li>
+<li>図面から抽出された数量データの取り込み</li>
+<li>数量・仕様・算出根拠の確認と修正</li>
+<li>自社料金表（Excel・CSV）の登録</li>
+<li>材料費・施工費の自動計算</li>
+<li>積算結果のExcel・CSV出力</li>
+</ul>
+<p><strong>重要事項</strong></p>
+<p>本ツールは、正式見積を自動確定するものではありません。</p>
+<p>AIが読み取れない寸法や仕様、図面に記載されていない情報は、数量が空欄になる場合があります。</p>
+<p>正式な見積・発注・契約の前には、必ず担当者が元図面と照合してください。</p>
+<hr />
+<h2>2. ご利用前に準備するもの</h2>
+<p>以下の3点をご用意ください。</p>
+<p><strong>① 住宅図面</strong></p>
+<p>画像ファイル、PDFファイルなどをご準備ください。</p>
+<p>可能な限り、文字や寸法が鮮明に読み取れる図面をご利用ください。</p>
+<p>複数の図面がある場合は、必要に応じてまとめてご準備ください。</p>
+<p><strong>② ChatGPT</strong></p>
+<p>図面の解析にはChatGPTを使用します。</p>
+<p>あらかじめChatGPTにログインし、ファイルを添付できる状態にしてください。</p>
+<p>※ChatGPTのプランや利用状況によって、ファイルの添付数・容量・解析回数などに制限がある場合があります。</p>
+<p><strong>③ 自社料金表（任意）</strong></p>
+<p>自社の材料単価・施工単価を使用する場合は、ExcelまたはCSV形式の料金表をご用意ください。</p>
+<p>料金表がない場合でも、単価を手入力して積算できます。</p>
+<hr />
+<h1>3. 基本操作の流れ</h1>
+<h2>STEP 1｜住宅図面を選択する</h2>
+<ol>
+<li>AI住宅積算ツールのURLを開きます。</li>
+<li>「案件名」に、対象となる工事名やお客様名などを入力します。</li>
+<li>「写真・画像を選ぶ」または「ファイルから選ぶ」を押します。</li>
+<li>解析したい図面を選択します。</li>
+<li>ファイル名と選択枚数が表示されたことを確認します。</li>
+<li>「ChatGPT用プロンプトを作る」を押します。</li>
+</ol>
+<p><strong>ポイント</strong></p>
+<p>図面を選択すると、画面内にプレビューが表示される場合があります。</p>
+<p>PDFや一部の画像形式では、ブラウザによってプレビューが表示されないことがあります。</p>
+<p>その場合でも、ファイル名が表示され、選択済みになっていれば次の操作へ進めます。</p>
+<p>ただし、ファイルの選択ができたことと、AIが図面を解析できたことは異なります。</p>
+<hr />
+<h2>STEP 2｜ChatGPT用プロンプトをコピーする</h2>
+<p>プロンプトとは、AIに作業内容を伝えるための指示文です。</p>
+<p>本ツールでは、住宅図面の数量拾いに適した指示文を自動生成します。</p>
+<p><strong>操作手順</strong></p>
+<ol>
+<li>「ChatGPT用プロンプトを作る」を押すと、指示文が表示されます。</li>
+<li>案件名や図面枚数が反映されていることを確認します。</li>
+<li>「プロンプトをコピー」を押します。</li>
+<li>コピー完了後、ChatGPTを開きます。</li>
+</ol>
+<p>指示文を最初から自分で作成する必要はありません。</p>
+<hr />
+<h2>STEP 3｜ChatGPTに図面とプロンプトを送信する</h2>
+<p><strong>ここが特に重要な操作です。</strong></p>
+<p>積算ツールで図面を選択しただけでは、ChatGPTに図面は送信されません。</p>
+<p>ChatGPT側でも、同じ図面を添付する必要があります。</p>
+<p><strong>操作手順</strong></p>
+<ol>
+<li>ChatGPTを開きます。</li>
+<li>新しいチャットを開始します。</li>
+<li>メッセージ入力欄付近の「＋」や添付ボタンを押します。</li>
+<li>STEP 1で選択した住宅図面を添付します。</li>
+<li>添付したファイルがChatGPTの入力欄に表示されたことを確認します。</li>
+<li>STEP 2でコピーしたプロンプトを貼り付けます。</li>
+<li><strong>図面とプロンプトの両方がそろっていることを確認してから送信します。</strong></li>
+<li>ChatGPTによる解析が完了するまで待ちます。</li>
+</ol>
+<p><strong>よくある間違い</strong></p>
+<p>❌ プロンプトだけを送信する</p>
+<p>⭕ 図面ファイルとプロンプトを一緒に送信する</p>
+<p>図面を添付し忘れると、AIは実際の寸法や数量を確認できません。</p>
+<p>その結果、数量が空欄になったり、正確な解析結果が得られなかったりします。</p>
+<h3>解析結果を確認する</h3>
+<p>ChatGPTから、次のようなJSON形式の回答が返ってきます。</p>
+<pre><code class="language-json">{
+  &quot;document_summary&quot;: {
+    &quot;detected_documents&quot;: [&quot;1階平面図&quot;],
+    &quot;missing_recommended_documents&quot;: [],
+    &quot;notes&quot;: [&quot;図面から確認できた数量を抽出&quot;]
+  },
+  &quot;items&quot;: [
+    {
+      &quot;floor&quot;: &quot;1F&quot;,
+      &quot;trade&quot;: &quot;内装工事&quot;,
+      &quot;room&quot;: &quot;LDK&quot;,
+      &quot;item&quot;: &quot;床仕上&quot;,
+      &quot;specification&quot;: &quot;フローリング&quot;,
+      &quot;quantity&quot;: 26.5,
+      &quot;unit&quot;: &quot;㎡&quot;,
+      &quot;basis&quot;: &quot;図面に26.50㎡と記載&quot;,
+      &quot;source_document&quot;: &quot;1階平面図&quot;,
+      &quot;confidence&quot;: &quot;A&quot;,
+      &quot;needs_confirmation&quot;: &quot;&quot;
+    }
+  ]
+}
+</code></pre>
+<p>※上記は形式を説明するためのサンプルです。実際の解析結果ではありません。</p>
+<p>JSONには、図面から確認できた数量や仕様、算出根拠などが記載されます。</p>
+<p><strong>回答が途中で止まった場合</strong></p>
+<p>ChatGPTに「JSONの続きだけを出してください」と伝えるのではなく、可能であれば「省略せず、最初から最後まで有効なJSONとして再出力してください」と依頼してください。</p>
+<p>途中のJSONだけでは積算ツールに取り込めない場合があります。</p>
+<hr />
+<h2>STEP 4｜JSONを積算ツールに読み込む</h2>
+<ol>
+<li>ChatGPTの解析結果をコピーします。</li>
+<li>AI住宅積算ツールに戻ります。</li>
+<li>STEP 4「JSONを貼り付け」の画面を開きます。</li>
+<li>コピーしたJSONを入力欄に貼り付けます。</li>
+<li>「JSONを読み込んで表にする」を押します。</li>
+<li>数量一覧が表示されたことを確認します。</li>
+</ol>
+<p><strong>確認するポイント</strong></p>
+<ul>
+<li>数量拾いの項目が表示されているか</li>
+<li>数量が入力されている項目があるか</li>
+<li>部屋名・工種・仕様が正しいか</li>
+<li>不明な数量が空欄になっているか</li>
+<li>「要確認」の内容が表示されているか</li>
+</ul>
+<p>読み込みに成功しても、必ずしもすべての数量が埋まるわけではありません。</p>
+<p>図面から判断できない数量は、空欄のままになることがあります。</p>
+<hr />
+<h2>STEP 5｜数量拾い結果を確認・修正する</h2>
+<p>ChatGPTが読み取った情報を一覧表で確認します。</p>
+<p>主な確認項目は以下のとおりです。</p>
+<table>
+<thead>
+<tr>
+  <th>項目</th>
+  <th>確認内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>階</td>
+  <td>1階・2階・基礎など</td>
+</tr>
+<tr>
+  <td>工種</td>
+  <td>内装工事・基礎工事など</td>
+</tr>
+<tr>
+  <td>部屋</td>
+  <td>LDK・寝室など</td>
+</tr>
+<tr>
+  <td>項目</td>
+  <td>床仕上・基礎梁など</td>
+</tr>
+<tr>
+  <td>仕様・寸法</td>
+  <td>材料や部材の寸法</td>
+</tr>
+<tr>
+  <td>数量</td>
+  <td>AIが抽出した数量</td>
+</tr>
+<tr>
+  <td>単位</td>
+  <td>㎡・㎥・m・箇所など</td>
+</tr>
+<tr>
+  <td>算出根拠</td>
+  <td>数量を判断した理由</td>
+</tr>
+<tr>
+  <td>信頼度</td>
+  <td>A・B・Cの3段階</td>
+</tr>
+<tr>
+  <td>要確認</td>
+  <td>担当者が確認すべき内容</td>
+</tr>
+</tbody>
+</table>
+<h3>信頼度について</h3>
+<p><strong>A：図面に明記されている情報</strong></p>
+<p>図面に数量や寸法などが直接記載されている場合です。</p>
+<p><strong>B：図面の寸法から計算した情報</strong></p>
+<p>図面に記載された寸法を使用して数量を算出した場合です。</p>
+<p><strong>C：確認が必要な情報</strong></p>
+<p>資料不足や判読困難などにより、数量を確定できない場合です。</p>
+<p>※信頼度Aでも、AIによる読み間違いの可能性はあります。必ず元図面と照合してください。</p>
+<h3>数量が空欄の場合</h3>
+<p>数量が空欄でも、必ずしもエラーではありません。</p>
+<p>例えば、基礎伏図の一部だけを読み込ませた場合、基礎梁の断面寸法は確認できても、建物全体の基礎梁延長は分からないことがあります。</p>
+<p>このような場合、AIは数量を推測せず、空欄として出力するように設定されています。</p>
+<p>必要に応じて追加図面を確認し、担当者が数量を入力してください。</p>
+<hr />
+<h2>STEP 6｜自社料金表を使用して積算する</h2>
+<p>数量を確認したら、積算画面へ進みます。</p>
+<h3>初めて自社料金表を使用する場合</h3>
+<ol>
+<li>STEP 6「単価を入力して積算」を開きます。</li>
+<li>料金マスターの読み込み機能を選択します。</li>
+<li>「Excel / CSVを読み込む」から自社料金表を選択します。</li>
+<li>読み込み完了の表示を確認します。</li>
+<li>数量表の項目と料金マスターの項目が照合され、対応する単価が反映されているか確認します。</li>
+<li>材料費・施工費・合計金額を確認します。</li>
+</ol>
+<h3>料金表の登録について</h3>
+<p>登録した料金マスターは、同じ端末・同じブラウザ内に保存されます。</p>
+<p>次回以降は、保存された料金マスターを使用して積算できます。</p>
+<p>ただし、以下の場合は再登録が必要になることがあります。</p>
+<ul>
+<li>別のPCやスマートフォンで操作する場合</li>
+<li>別のブラウザを使用する場合</li>
+<li>ブラウザの保存データを削除した場合</li>
+<li>プライベートブラウズなど、保存が維持されない環境で利用した場合</li>
+</ul>
+<h3>自動計算されない場合</h3>
+<p>料金マスターと数量表の項目名・仕様・単位などが一致していない可能性があります。</p>
+<p>料金マスターに該当項目が登録されているか確認してください。</p>
+<p>一致しない場合は、単価を手入力して計算できます。</p>
+<p><strong>注意：</strong> 料金表が読み込めていても、すべての項目に自動で単価が設定されるとは限りません。単価が0円または空欄の項目がないか、必ず確認してください。</p>
+<hr />
+<h2>STEP 7｜積算結果をExcel・CSVで出力する</h2>
+<p>積算結果を確認したら、出力画面へ進みます。</p>
+<p><strong>操作手順</strong></p>
+<ol>
+<li>「出力へ」を押します。</li>
+<li>ExcelまたはCSVの出力形式を選択します。</li>
+<li>ファイルを保存します。</li>
+<li>保存したファイルを開き、数量・単価・合計金額を確認します。</li>
+</ol>
+<h3>PCの場合</h3>
+<p>通常は、ブラウザのダウンロード先にファイルが保存されます。</p>
+<h3>iPhoneの場合</h3>
+<p>共有画面が表示された場合は、「ファイルに保存」などを選択してください。</p>
+<p>保存方法は、使用しているブラウザや端末によって異なります。</p>
+<hr />
+<h1>4. よくあるトラブルと対処方法</h1>
+<h2>Q1. JSONを読み込めませんでした、と表示される</h2>
+<h3>考えられる原因</h3>
+<p>JSONの形式が正しくない可能性があります。</p>
+<p>例えば、次のようなエラーです。</p>
+<p><code>JSON Parse error: Unrecognized token '“'</code></p>
+<p>このエラーは、JSON内に使用できない引用符が含まれている場合に発生します。</p>
+<p>JSONでは、項目名や文字列を半角のダブルクォーテーション <code>&quot;</code> で囲む必要があります。</p>
+<p><strong>正しい例</strong></p>
+<pre><code class="language-json">{
+  &quot;quantity&quot;: 3.95,
+  &quot;unit&quot;: &quot;m&quot;
+}
+</code></pre>
+<p><strong>誤った例</strong></p>
+<pre><code class="language-text">{
+  “quantity”: 3.95,
+  “unit”: “m”
+}
+</code></pre>
+<h3>対処方法</h3>
+<p>ChatGPTに戻り、次の文章を送信してください。</p>
+<p><strong>コピーして使える修正依頼文</strong></p>
+<blockquote>
+<p>先ほど出力したJSONを、標準的なJSON形式に修正して、最初から最後まで再出力してください。</p>
+<p>以下の条件を守ってください。</p>
+<p>・ダブルクォーテーションは必ず半角の &quot; を使用してください。</p>
+<p>・全角の “ や ” は使用しないでください。</p>
+<p>・数量や仕様、算出根拠などの内容は変更しないでください。</p>
+<p>・nullはそのまま維持してください。</p>
+<p>・document_summaryとitemsを含めてください。</p>
+<p>・省略や途中切れのない、有効なJSONを出力してください。</p>
+<p>・説明文やMarkdownは付けず、JSONのみを出力してください。</p>
+</blockquote>
+<p>再出力されたJSONをコピーし、積算ツールのSTEP 4に貼り付け直してください。</p>
+<p><strong>それでも解決しない場合</strong></p>
+<p>JSONが途中で切れていないか、冒頭と末尾がそろっているかを確認してください。</p>
+<p>スマートフォンのキーボードなどで引用符が自動変換される場合もあるため、可能な限りChatGPTのコピー機能を使用してください。</p>
+<hr />
+<h2>Q2. JSONは読み込めたが、数量が表示されない</h2>
+<p>以下を確認してください。</p>
+<p><strong>① ChatGPTに図面を添付しましたか？</strong></p>
+<p>プロンプトだけでは図面を解析できません。</p>
+<p>必ず図面ファイルも添付してください。</p>
+<p><strong>② 図面の文字は鮮明ですか？</strong></p>
+<p>寸法や部材記号が小さい場合、AIが読み取れないことがあります。</p>
+<p>可能であれば、高解像度の図面を使用してください。</p>
+<p><strong>③ 必要な図面が不足していませんか？</strong></p>
+<p>例えば、基礎伏図の一部分だけでは、建物全体のコンクリート数量や鉄筋数量を算出できない場合があります。</p>
+<p><strong>④ JSONのquantityがnullになっていませんか？</strong></p>
+<p><code>&quot;quantity&quot;: null</code> は「数量未確定」という意味です。</p>
+<p>これは読み込みエラーではありません。</p>
+<p>必要な図面を追加し、再解析してください。</p>
+<hr />
+<h2>Q3. PDFを選択したが、プレビューが表示されない</h2>
+<p>ブラウザによっては、PDFのプレビューが表示されない場合があります。</p>
+<p>ファイル名が表示されていれば、選択自体はできている可能性があります。</p>
+<p>ただし、ChatGPTでの解析時には、PDFを改めて添付してください。</p>
+<hr />
+<h2>Q4. ChatGPTが図面にない数量を出力している</h2>
+<p>AIが誤って数値を推測した可能性があります。</p>
+<p>図面と照合し、根拠が確認できない数値は採用しないでください。</p>
+<p>必要に応じて、ChatGPTに次のように依頼してください。</p>
+<blockquote>
+<p>図面に記載されている情報のみを根拠として、数量拾いを再実行してください。図面から確認できない数量は推測せず、quantityをnullにしてください。各数量の算出根拠も明記してください。</p>
+</blockquote>
+<hr />
+<h2>Q5. 自社料金表を読み込んだのに、単価が反映されない</h2>
+<p>料金マスターと数量表の項目名や仕様が一致していない可能性があります。</p>
+<p>例えば、料金表では「フローリング施工」、数量表では「床仕上」と記載されている場合、同じ工事内容でも自動照合できないことがあります。</p>
+<p>料金表の登録内容を確認し、必要に応じて項目名を調整するか、単価を手入力してください。</p>
+<hr />
+<h2>Q6. Excel・CSVが保存できない</h2>
+<p>ブラウザのダウンロード設定や、スマートフォンの保存先を確認してください。</p>
+<p>iPhoneでは共有画面から「ファイルに保存」を選択できる場合があります。</p>
+<p>また、別のブラウザで操作すると改善する場合があります。</p>
+<hr />
+<h1>5. 正確な積算結果を得るためのポイント</h1>
+<p>より正確な数量拾いを行うため、次の点を意識してください。</p>
+<ol>
+<li><p><strong>できるだけ鮮明な図面を使用する</strong><br />
+文字や寸法がつぶれている図面は、読み取り精度が低下する場合があります。</p>
+</li>
+<li><p><strong>関連する図面をそろえる</strong><br />
+平面図だけでなく、立面図・断面図・仕上表・基礎伏図・配筋図などを組み合わせると、確認できる情報が増えます。</p>
+</li>
+<li><p><strong>一度に大量の図面を送信しすぎない</strong><br />
+図面の種類ごとに分けて解析することで、結果を確認しやすくなります。</p>
+</li>
+<li><p><strong>数量の算出根拠を確認する</strong><br />
+数字が表示されていても、図面上の寸法や計算式と一致するか確認してください。</p>
+</li>
+<li><p><strong>不明な数量を無理に確定しない</strong><br />
+判断できない数量は空欄のまま残し、追加資料で確認してください。</p>
+</li>
+<li><p><strong>自社料金表の内容を定期的に確認する</strong><br />
+古い単価が残っていると、数量が正しくても積算金額に誤差が生じます。</p>
+</li>
+</ol>
+<hr />
+<h1>6. 最終確認チェックリスト</h1>
+<p>積算結果を提出・共有する前に、以下を確認してください。</p>
+<ul>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>ChatGPTに必要な図面を添付した</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>JSONを正常に読み込めた</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>数量と単位が元図面に一致している</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>算出根拠を確認した</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>信頼度C・要確認項目を確認した</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>重複計上や拾い漏れがない</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>自社料金マスターが正しく反映されている</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>単価が0円・空欄の項目を確認した</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>材料費・施工費・合計金額を確認した</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>出力したExcel・CSVの内容を確認した</li>
+</ul>
+<hr />
+<h2>7. 最後に</h2>
+<p>本ツールは、住宅積算業務の効率化を目的とした補助ツールです。</p>
+<p>AIによって数量拾いの初期作業を効率化できますが、図面の解釈や数量の正確性を保証するものではありません。</p>
+<p>特に、構造・基礎・配筋・設備などの数量については、複数の図面や仕様書の確認が必要になる場合があります。</p>
+<p><strong>AIによる数量拾い → 担当者による確認・修正 → 自社単価による積算</strong></p>
+<p>という流れでご活用ください。</p>
+<p>正式な見積・契約・発注に使用する際は、必ず担当者による最終確認をお願いいたします。</p>
+</div></details>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+let selectedFiles=[], rows=[], summary={}, priceMaster=[];
+const PRICE_MASTER_KEY="aiSekisanPriceMasterV1";
+const imagePicker=document.getElementById("imagePicker");
+const filePicker=document.getElementById("filePicker");
+
+function bindPicker(el){
+  if(!el) return;
+  el.addEventListener("change",function(){
+    const list=Array.from(el.files||[]);
+    if(!list.length) return;
+    selectedFiles=[...selectedFiles,...list].slice(0,20);
+    renderSelectedFiles();
+    // same file can be selected again later
+    setTimeout(function(){ try{el.value="";}catch(e){} },0);
+  });
+}
+bindPicker(imagePicker);
+bindPicker(filePicker);
+
+function renderSelectedFiles(){
+  const meta=document.getElementById("filemeta");
+  const bar=document.getElementById("thumbbar");
+  const pv=document.getElementById("preview");
+  meta.innerHTML="<b>"+selectedFiles.length+"枚選択済み</b><br>"+selectedFiles.map(function(f){return esc(f.name||"名称不明")}).join(" / ");
+  bar.innerHTML="";
+  if(!selectedFiles.length){
+    pv.innerHTML='<span class="placeholder">選択した図面をここに表示</span>';
+    return;
+  }
+
+  selectedFiles.forEach(function(file,i){
+    const tile=document.createElement("button");
+    tile.type="button";
+    tile.style.cssText="width:76px;height:76px;padding:0;border:1px solid #d9e7f0;border-radius:9px;background:#fff;overflow:hidden;flex:0 0 auto";
+    const url=URL.createObjectURL(file);
+    const isPdf=(file.type==="application/pdf")||/\.pdf$/i.test(file.name||"");
+
+    if(isPdf){
+      tile.innerHTML='<span style="font-size:11px;padding:4px;display:grid;place-items:center;height:100%;line-height:1.3">📄<br>PDF</span>';
+      tile.addEventListener("click",function(){showPreview(url,file.name,file.type)});
+      bar.appendChild(tile);
+      if(i===0) showPreview(url,file.name,file.type);
+      return;
+    }
+
+    const img=document.createElement("img");
+    img.className="thumb";
+    img.style.cssText="width:100%;height:100%;object-fit:cover;border:0;border-radius:0";
+    img.src=url;
+    img.alt=file.name||"図面";
+    img.onload=function(){
+      if(i===0) showPreview(url,file.name,file.type);
+    };
+    img.onerror=function(){
+      tile.innerHTML='<span style="font-size:10px;padding:4px;display:grid;place-items:center;height:100%">選択済<br>プレビュー不可</span>';
+      if(i===0){
+        pv.innerHTML='<span class="placeholder">ファイルは選択済みです。この形式はブラウザでプレビューできない場合があります。</span>';
+      }
+    };
+    tile.addEventListener("click",function(){showPreview(url,file.name,file.type)});
+    tile.appendChild(img);
+    bar.appendChild(tile);
+  });
+}
+
+function showPreview(url,name,type){
+  const pv=document.getElementById("preview");
+  pv.innerHTML="";
+  const isPdf=(type==="application/pdf")||/\.pdf$/i.test(name||"");
+  if(isPdf){
+    const obj=document.createElement("object");
+    obj.data=url;
+    obj.type="application/pdf";
+    obj.style.cssText="width:100%;height:100%;border:0";
+    obj.innerHTML='<span class="placeholder">PDFは選択済みです。ブラウザによってはプレビューできません。</span>';
+    pv.appendChild(obj);
+    return;
+  }
+  const img=document.createElement("img");
+  img.src=url; img.alt=name||"図面";
+  img.onerror=function(){
+    pv.innerHTML='<span class="placeholder">ファイルは選択済みですが、この形式はブラウザでプレビューできません。</span>';
+  };
+  pv.appendChild(img);
+}
+
+function show(n){
+  document.querySelectorAll("section.card").forEach(x=>x.classList.add("hidden"));
+  document.getElementById("p"+n).classList.remove("hidden");
+  const map={1:0,2:1,3:2,4:3,5:3,6:4,7:5};
+  document.querySelectorAll(".step").forEach((x,i)=>x.classList.toggle("on",i===map[n]));
+  try{window.scrollTo(0,0)}catch(e){};
+}
+function makePrompt(){
+  const projectEl=document.getElementById("project");
+  const promptEl=document.getElementById("prompt");
+  const project=(projectEl && projectEl.value ? projectEl.value.trim() : "") || "未設定";
+  const count=Array.isArray(selectedFiles)?selectedFiles.length:0;
+  const p=`あなたは日本の木造戸建住宅の積算補助AIです。
+添付した住宅図面を読み取り、数量拾いを行ってください。
+
+案件名：${project}
+添付図面数：${count ? count+"枚" : "ツール側未選択（ChatGPT側で添付）"}
+
+【目的】
+正式見積を自動確定することではなく、図面から確認可能な情報を構造化し、
+人間が確認できる数量拾い表を作ることです。
+
+【最重要ルール】
+1. 図面から確認できない数値や仕様を推測して確定値にしないでください。
+2. 図面に数量・寸法・仕様が明記されている場合は、そのまま採用し、根拠を記録してください。
+3. 寸法から計算した場合は、使用した寸法と計算式をbasisに書いてください。
+4. 不足資料・判読不能・図面間不整合がある場合はquantityをnullにし、needs_confirmationに理由を書いてください。
+5. confidenceは次のルールにしてください。
+   A = 図面に数量・寸法・仕様が明記されている
+   B = 図面の寸法から合理的に計算できる
+   C = 資料不足、判読困難、図面間不整合など、人間確認が必要
+6. 単価や金額は推測しないでください。数量拾いだけを行ってください。
+7. 同じ項目を重複計上しないでください。
+8. 日本語で記述してください。
+9. 図面を見て最初に資料種別を判定し、不足している推奨資料も挙げてください。
+10. 最後の回答は必ずJSONのみ。説明文・Markdown・コードブロックは付けないでください。
+
+【出力JSON形式】
+{
+  "document_summary": {
+    "detected_documents": ["1階平面図"],
+    "missing_recommended_documents": ["立面図","断面図"],
+    "notes": ["判読できた範囲のみ抽出"]
+  },
+  "items": [
+    {
+      "floor": "1F",
+      "trade": "内装工事",
+      "room": "LDK",
+      "item": "床仕上",
+      "specification": "フローリング",
+      "quantity": 26.5,
+      "unit": "㎡",
+      "basis": "図面に26.50㎡と記載",
+      "source_document": "1階平面図",
+      "confidence": "A",
+      "needs_confirmation": ""
+    }
+  ]
+}
+
+【数量拾いの考え方】
+・床面積、天井面積、室面積、建具数、収納数、設備数、明記寸法などは優先抽出
+・壁面積、外壁面積、屋根、基礎、構造材、設備配管など、資料不足で確定できないものは無理に出さない
+・「たぶん」「一般的には」で数量を埋めない
+・不明な項目はC判定で残す
+
+それでは、添付図面を確認してJSONのみで回答してください。`;
+  promptEl.value=p;
+  show(2);
+}
+async function copyPrompt(){
+  const t=document.getElementById("prompt").value;
+  try{await navigator.clipboard.writeText(t)}
+  catch{const ta=document.getElementById("prompt");ta.focus();ta.select();document.execCommand("copy")}
+  document.getElementById("copymsg").classList.remove("hidden");
+}
+function cleanJsonText(t){
+  t=t.trim().replace(/^```json\s*/i,"").replace(/^```\s*/,"").replace(/\s*```$/,"");
+  const first=t.indexOf("{"),last=t.lastIndexOf("}");
+  if(first>=0&&last>first)t=t.slice(first,last+1);
+  return t;
+}
+function importJSON(){
+  const msg=document.getElementById("jsonmsg");msg.classList.add("hidden");
+  try{
+    const raw=document.getElementById("jsonbox").value;
+    if(!raw.trim())throw new Error("JSONが未入力です。ChatGPTの回答を貼り付けてください");
+    let cleaned=cleanJsonText(raw);
+    let obj;
+    try { obj=JSON.parse(cleaned); }
+    catch(firstError) {
+      // ChatGPTやスマホ経由でJSONの区切り引用符がスマートクォート化された場合に対応。
+      // 最初に通常のJSONを優先し、失敗時のみ置換して再試行する。
+      const normalized=cleaned.replace(/[“”＂]/g,'"').replace(/\uFEFF/g,'');
+      try { obj=JSON.parse(normalized); }
+      catch(secondError) { throw new Error(secondError.message+"。引用符・カンマ・配列の括弧を確認してください。ChatGPTの回答全体をコピーし直すか、マニュアルの修正依頼文をご利用ください。"); }
+    }
+    if(!obj||!Array.isArray(obj.items))throw new Error("items配列が見つかりません。指定のJSON形式で再出力してください");
+    if(obj.items.length===0)throw new Error("数量データが0件です。ChatGPTに図面を添付したか確認し、数量拾いをやり直してください");
+    const nextRows=obj.items.map(normalizeRow);
+    const valid=nextRows.filter(r=>r.qty!==""&&Number.isFinite(r.qty));
+    summary=obj.document_summary||{};rows=nextRows;renderSummary();renderRows();show(5);
+    const notice=document.getElementById("quantityStatus");
+    if(notice){
+      notice.classList.remove("hidden");
+      notice.className=valid.length?"info":"warn";
+      notice.textContent=`読み込み結果：${rows.length}項目、数量が数値として記載された項目 ${valid.length}件。`+(valid.length===0?" 数量がすべて未確定です。図面をChatGPTに添付して解析できたか確認してください。":" 未確定項目は空欄で表示します。");
+    }
+  }catch(e){
+    msg.textContent="JSONを読み込めませんでした："+e.message;msg.classList.remove("hidden");
+  }
+}
+function normalizeRow(r){r=r||{};return{floor:String(r.floor??""),trade:String(r.trade??""),room:String(r.room??""),item:String(r.item??""),spec:String(r.specification??r.spec??""),qty:(r.quantity===null||r.quantity===undefined||r.quantity==="")?"":(Number.isFinite(Number(String(r.quantity).replace(/[,，\s]/g,"")))?Number(String(r.quantity).replace(/[,，\s]/g,"")):""),unit:String(r.unit??""),basis:String(r.basis??""),source:String(r.source_document??r.source??""),conf:["A","B","C"].includes(r.confidence)?r.confidence:"C",check:String(r.needs_confirmation??r.check??"")}}
+function renderSummary(){const d=summary||{};document.getElementById("docSummary").innerHTML=`<b>確認できた資料：</b>${esc((d.detected_documents||[]).join("、")||"不明")}<br><b>追加推奨：</b>${esc((d.missing_recommended_documents||[]).join("、")||"なし")}<br><span class="sub">${esc((d.notes||[]).join(" / "))}</span>`}
+function renderRows(){
+  const tb=document.getElementById("tbody");tb.innerHTML="";
+  rows.forEach(r=>{const tr=document.createElement("tr");tr.innerHTML=`<td><input value="${esc(r.floor)}"></td><td><input value="${esc(r.trade)}"></td><td><input value="${esc(r.room)}"></td><td><input value="${esc(r.item)}"></td><td><input value="${esc(r.spec)}"></td><td><input type="number" step="0.01" value="${r.qty??""}"></td><td><input value="${esc(r.unit)}"></td><td><input value="${esc(r.basis)}"></td><td><input value="${esc(r.source)}"></td><td><select><option ${r.conf==="A"?"selected":""}>A</option><option ${r.conf==="B"?"selected":""}>B</option><option ${r.conf==="C"?"selected":""}>C</option></select></td><td><input value="${esc(r.check)}"></td>`;tb.appendChild(tr)})
+}
+function sync(){rows=[...document.querySelectorAll("#tbody tr")].map(tr=>{const a=tr.querySelectorAll("input"),s=tr.querySelector("select");return{floor:a[0].value,trade:a[1].value,room:a[2].value,item:a[3].value,spec:a[4].value,qty:a[5].value===""?"":Number(a[5].value),unit:a[6].value,basis:a[7].value,source:a[8].value,conf:s.value,check:a[9].value}})}
+function addRow(){sync();rows.push({floor:"",trade:"",room:"",item:"",spec:"",qty:"",unit:"",basis:"手入力",source:"",conf:"C",check:"元図面と照合"});renderRows()}
+function normalizeKey(s){return String(s??"").trim().toLowerCase().replace(/[\s　]+/g,"").replace(/[‐‑‒–—―ー]/g,"-");}
+function numberOrZero(v){if(v===null||v===undefined||v==="")return 0;const n=Number(String(v).replace(/[,，￥¥円%％\s]/g,""));return Number.isFinite(n)?n:0;}
+function findPriceForRow(r){const ik=normalizeKey(r.item),sk=normalizeKey(r.spec),uk=normalizeKey(r.unit);if(!ik)return null;const c=priceMaster.filter(p=>normalizeKey(p.item)===ik);if(!c.length)return null;let best=null,score=-999;c.forEach(p=>{const ps=normalizeKey(p.spec),pu=normalizeKey(p.unit);let x=0;if(ps){if(ps===sk)x+=6;else x-=4}else x+=1;if(pu){if(pu===uk)x+=3;else x-=2}else x+=1;if(x>score){best=p;score=x}});return score>=0?best:null;}
+function markManual(el){const tr=el.closest("tr");if(tr){tr.dataset.priceSource="手入力";const x=tr.querySelector(".price-source");if(x)x.textContent="手入力"}calc();}
+function toEstimate(){sync();const tb=document.getElementById("estbody");tb.innerHTML="";rows.forEach((r,i)=>{const q=Number(r.qty)||0,p=findPriceForRow(r),tr=document.createElement("tr");tr.dataset.i=i;tr.dataset.priceSource=p?"料金マスター":"手入力";const loss=p?numberOrZero(p.loss):0,mp=p?numberOrZero(p.material):0,lp=p?numberOrZero(p.labor):0;tr.innerHTML=`<td>${esc((r.room?r.room+" / ":"")+r.item)}</td><td>${q}</td><td>${esc(r.unit)}</td><td><input class="loss" type="number" step="0.01" value="${loss}" oninput="markManual(this)"></td><td class="oq">${q.toFixed(2)}</td><td><input class="mp" type="number" step="0.01" value="${mp}" oninput="markManual(this)"></td><td><input class="lp" type="number" step="0.01" value="${lp}" oninput="markManual(this)"></td><td class="mc">0</td><td class="lc">0</td><td class="tc">0</td><td><span class="tag ${r.conf}">${r.conf}</span></td><td class="price-source">${p?"料金マスター":"手入力"}</td>`;tb.appendChild(tr)});calc();show(6);}
+function applyPriceMasterToEstimate(){document.querySelectorAll("#estbody tr").forEach(tr=>{const r=rows[Number(tr.dataset.i)],p=findPriceForRow(r);if(!p)return;tr.querySelector(".loss").value=numberOrZero(p.loss);tr.querySelector(".mp").value=numberOrZero(p.material);tr.querySelector(".lp").value=numberOrZero(p.labor);tr.dataset.priceSource="料金マスター";const x=tr.querySelector(".price-source");if(x)x.textContent="料金マスター"});calc();setPriceStatus("料金マスターを積算表へ再適用しました。","ok");}
+function loadPriceMaster(){try{const saved=localStorage.getItem(PRICE_MASTER_KEY);priceMaster=saved?JSON.parse(saved):[];if(!Array.isArray(priceMaster))priceMaster=[]}catch(e){priceMaster=[]}renderPriceMaster();if(priceMaster.length)setPriceStatus(`保存済み料金マスター ${priceMaster.length}件を読み込みました。`,"ok");}
+function savePriceMaster(){localStorage.setItem(PRICE_MASTER_KEY,JSON.stringify(priceMaster));renderPriceMaster();}
+function setPriceStatus(t,type){const el=document.getElementById("priceStatus");if(!el)return;el.textContent=t||"";el.style.color=type==="err"?"#a63c3c":type==="ok"?"#24764b":"#6b8192";}
+function renderPriceMaster(){const tb=document.getElementById("priceMasterBody");if(!tb)return;tb.innerHTML="";priceMaster.forEach((p,i)=>{const tr=document.createElement("tr");tr.innerHTML=`<td><input class="pm-item" value="${esc(p.item)}"></td><td><input class="pm-spec" value="${esc(p.spec||"")}"></td><td><input class="pm-unit" value="${esc(p.unit||"")}"></td><td><input class="pm-loss" type="number" step="0.01" value="${numberOrZero(p.loss)}"></td><td><input class="pm-mat" type="number" step="0.01" value="${numberOrZero(p.material)}"></td><td><input class="pm-lab" type="number" step="0.01" value="${numberOrZero(p.labor)}"></td><td><button class="r" type="button" onclick="removePriceMasterRow(${i})">削除</button></td>`;tb.appendChild(tr)});}
+function savePriceMasterFromTable(){const arr=[];document.querySelectorAll("#priceMasterBody tr").forEach(tr=>{const item=tr.querySelector(".pm-item").value.trim();if(!item)return;arr.push({item,spec:tr.querySelector(".pm-spec").value.trim(),unit:tr.querySelector(".pm-unit").value.trim(),loss:numberOrZero(tr.querySelector(".pm-loss").value),material:numberOrZero(tr.querySelector(".pm-mat").value),labor:numberOrZero(tr.querySelector(".pm-lab").value)})});priceMaster=arr;savePriceMaster();setPriceStatus(`料金マスター ${priceMaster.length}件を保存しました。`,"ok");}
+function addPriceMasterRow(){priceMaster.push({item:"",spec:"",unit:"",loss:0,material:0,labor:0});renderPriceMaster();}
+function removePriceMasterRow(i){priceMaster.splice(i,1);savePriceMaster();setPriceStatus("料金行を削除しました。","ok");}
+function clearPriceMaster(){if(!confirm("保存済みの料金マスターをすべて削除しますか？"))return;priceMaster=[];localStorage.removeItem(PRICE_MASTER_KEY);renderPriceMaster();setPriceStatus("料金マスターを削除しました。","ok");}
+function headerValue(row,aliases){const keys=Object.keys(row||{});for(const a of aliases){const ak=normalizeKey(a);const k=keys.find(k=>normalizeKey(k)===ak);if(k!==undefined)return row[k]}return "";}
+async function importPriceFile(file){if(!file)return;const input=document.getElementById("priceFile");setPriceStatus("料金表を読み込んでいます…","");try{if(typeof XLSX==="undefined")throw new Error("Excel読込ライブラリを取得できませんでした");const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{defval:""}),imported=[];data.forEach(row=>{const item=String(headerValue(row,["項目","品目","商品名","工事項目","item"])).trim();if(!item)return;imported.push({item,spec:String(headerValue(row,["仕様・寸法","仕様","規格","specification","spec"])).trim(),unit:String(headerValue(row,["単位","unit"])).trim(),loss:numberOrZero(headerValue(row,["ロス率%","ロス率(%)","ロス率","ロス","loss","lossrate"])),material:numberOrZero(headerValue(row,["材料単価","材料費単価","材料価格","material_unit_price","materialprice","material"])),labor:numberOrZero(headerValue(row,["施工単価","労務単価","工賃","施工費単価","labor_unit_price","laborprice","labor"]))})});if(!imported.length)throw new Error("読み込める料金行がありません。『項目』列を確認してください");const map=new Map(priceMaster.map(p=>[normalizeKey(p.item)+"|"+normalizeKey(p.spec)+"|"+normalizeKey(p.unit),p]));imported.forEach(p=>map.set(normalizeKey(p.item)+"|"+normalizeKey(p.spec)+"|"+normalizeKey(p.unit),p));priceMaster=[...map.values()];savePriceMaster();setPriceStatus(`${file.name} から ${imported.length}件を読み込み、合計${priceMaster.length}件を保存しました。`,"ok");if(document.querySelectorAll("#estbody tr").length)applyPriceMasterToEstimate()}catch(e){setPriceStatus("料金表を読み込めませんでした："+(e&&e.message?e.message:e),"err")}finally{if(input)input.value=""}}
+function saveCurrentEstimateToMaster(){const map=new Map(priceMaster.map(p=>[normalizeKey(p.item)+"|"+normalizeKey(p.spec)+"|"+normalizeKey(p.unit),p]));let n=0;document.querySelectorAll("#estbody tr").forEach(tr=>{const r=rows[Number(tr.dataset.i)];if(!r||!String(r.item||"").trim())return;const p={item:r.item,spec:r.spec||"",unit:r.unit||"",loss:numberOrZero(tr.querySelector(".loss").value),material:numberOrZero(tr.querySelector(".mp").value),labor:numberOrZero(tr.querySelector(".lp").value)};map.set(normalizeKey(p.item)+"|"+normalizeKey(p.spec)+"|"+normalizeKey(p.unit),p);n++});priceMaster=[...map.values()];savePriceMaster();setPriceStatus(`現在の積算表から ${n}件の単価を料金マスターへ保存しました。`,"ok");}
+async function exportPriceMasterCsv(){savePriceMasterFromTable();const headers=["項目","仕様・寸法","単位","ロス率%","材料単価","施工単価"],body=priceMaster.map(p=>[p.item,p.spec,p.unit,p.loss,p.material,p.labor]),csv="\uFEFF"+[headers,...body].map(r=>r.map(v=>'"'+String(v??"").replaceAll('"','""')+'"').join(",")).join("\n"),b=new Blob([csv],{type:"text/csv;charset=utf-8"});await saveGeneratedFile(b,"AI住宅積算_料金マスター.csv","料金マスターCSV");}
+function calc(){
+  let mt=0,lt=0,ct=0;
+  document.querySelectorAll("#estbody tr").forEach(tr=>{const i=Number(tr.dataset.i),r=rows[i],q=Number(r.qty)||0,loss=Number(tr.querySelector(".loss").value)||0,oq=q*(1+loss/100),mp=Number(tr.querySelector(".mp").value)||0,lp=Number(tr.querySelector(".lp").value)||0,mc=oq*mp,lc=oq*lp;tr.querySelector(".oq").textContent=oq.toFixed(2);tr.querySelector(".mc").textContent=Math.round(mc).toLocaleString();tr.querySelector(".lc").textContent=Math.round(lc).toLocaleString();tr.querySelector(".tc").textContent=Math.round(mc+lc).toLocaleString();mt+=mc;lt+=lc;if(r.conf==="C"||r.check)ct++});
+  mat.textContent="¥"+Math.round(mt).toLocaleString();lab.textContent="¥"+Math.round(lt).toLocaleString();total.textContent="¥"+Math.round(mt+lt).toLocaleString();checks.textContent=ct;
+}
+function exportData(){return [...document.querySelectorAll("#estbody tr")].map(tr=>{const i=Number(tr.dataset.i),r=rows[i],q=Number(r.qty)||0,loss=Number(tr.querySelector(".loss").value)||0,oq=q*(1+loss/100),mp=Number(tr.querySelector(".mp").value)||0,lp=Number(tr.querySelector(".lp").value)||0;return[r.floor,r.trade,r.room,r.item,r.spec,r.qty,r.unit,loss,oq.toFixed(2),mp,lp,Math.round(oq*mp),Math.round(oq*lp),Math.round(oq*(mp+lp)),r.basis,r.source,r.conf,r.check]})}
+function safeFileBaseName(name){return String(name||"AI積算").trim().replace(/[\\/:*?"<>|]/g,"_").replace(/\s+/g," ").slice(0,80)||"AI積算";}
+function isIOSDevice(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+function setExportStatus(text,type){const el=document.getElementById("exportStatus");if(!el)return;el.textContent=text;el.classList.remove("hidden","ok","warn","info");el.classList.add(type==="ok"?"ok":type==="warn"?"warn":"info");}
+async function saveGeneratedFile(blob,filename,label){const file=new File([blob],filename,{type:blob.type||"application/octet-stream",lastModified:Date.now()});if(isIOSDevice()&&navigator.share&&navigator.canShare){try{if(navigator.canShare({files:[file]})){setExportStatus(`${label}を作成しました。共有画面から「ファイルに保存」を選んでください。`,"ok");await navigator.share({files:[file],title:filename});return}}catch(e){if(e&&e.name==="AbortError"){setExportStatus("共有画面を閉じました。もう一度ボタンを押せば再保存できます。","warn");return}}}const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;a.rel="noopener";a.style.display="none";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},1500);setExportStatus(`${label}を作成しました。ブラウザのダウンロード一覧または「ファイル」アプリを確認してください。`,"ok");}
+function buildExportRows(){const headers=["階","工種","部屋","項目","仕様・寸法","数量","単位","ロス率(%)","発注数量","材料単価","施工単価","材料費","施工費","合計","算出根拠","参照図面","信頼度","要確認"];return [headers,...exportData()];}
+async function exportXlsx(){try{if(typeof XLSX==="undefined")throw new Error("Excel出力ライブラリを読み込めませんでした。通信状態を確認してください");calc();const all=buildExportRows(),ws=XLSX.utils.aoa_to_sheet(all);ws["!cols"]=[{wch:8},{wch:14},{wch:14},{wch:20},{wch:22},{wch:11},{wch:9},{wch:11},{wch:12},{wch:13},{wch:13},{wch:13},{wch:13},{wch:14},{wch:36},{wch:20},{wch:9},{wch:36}];const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"積算結果");const bytes=XLSX.write(wb,{bookType:"xlsx",type:"array",compression:true}),blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),filename=safeFileBaseName(document.getElementById("project").value)+"_積算結果.xlsx";await saveGeneratedFile(blob,filename,"Excelファイル")}catch(e){console.error(e);setExportStatus("Excelファイルを作成できませんでした："+(e&&e.message?e.message:e),"warn")}}
+async function exportCsv(){try{calc();const csv="\uFEFF"+buildExportRows().map(r=>r.map(v=>'"'+String(v??"").replaceAll('"','""')+'"').join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),filename=safeFileBaseName(document.getElementById("project").value)+"_積算結果.csv";await saveGeneratedFile(blob,filename,"CSVファイル")}catch(e){console.error(e);setExportStatus("CSVファイルを作成できませんでした："+(e&&e.message?e.message:e),"warn")}}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function fillSample(){document.getElementById("jsonbox").value=JSON.stringify({document_summary:{detected_documents:["1階平面図"],missing_recommended_documents:["立面図","断面図","仕上表"],notes:["サンプルJSONです"]},items:[{floor:"1F",trade:"内装工事",room:"LDK",item:"床仕上",specification:"フローリング",quantity:26.5,unit:"㎡",basis:"図面に26.50㎡と記載",source_document:"1階平面図",confidence:"A",needs_confirmation:""},{floor:"1F",trade:"住宅設備",room:"キッチン",item:"システムキッチン",specification:"W2550",quantity:1,unit:"台",basis:"図面にW2550と記載",source_document:"1階平面図",confidence:"A",needs_confirmation:""},{floor:"1F",trade:"内装工事",room:"LDK",item:"壁クロス",specification:"",quantity:null,unit:"㎡",basis:"立面高さ・開口控除の情報不足",source_document:"1階平面図",confidence:"C",needs_confirmation:"断面図・建具表を確認"}]},null,2)}
+
+function setSystemReady(){
+  const box=document.getElementById("systemStatus");
+  const txt=document.getElementById("systemStatusText");
+  if(box){
+    box.className="ok";
+    box.innerHTML='<b><span class="status-dot"></span>システム正常</b> <span id="systemStatusText">JavaScriptが正常に動作しています。</span>';
+  }
+}
+document.addEventListener("DOMContentLoaded",function(){
+  setSystemReady();
+  loadPriceMaster();
+  const btn=document.getElementById("generatePromptBtn");
+  if(btn){
+    btn.addEventListener("click",function(e){
+      e.preventDefault();
+      const st=document.getElementById("generateStatus");
+      try{
+        if(st) st.textContent="プロンプトを生成しています…";
+        makePrompt();
+        if(st) st.textContent="";
+      }catch(err){
+        console.error(err);
+        if(st) st.textContent="生成エラー："+(err && err.message ? err.message : "不明なエラー");
+        alert("プロンプト生成でエラーが起きました。画面上部が「システム正常」になっているか確認してください。");
+      }
+    });
+  }
+});
+</script>
+</body></html>
